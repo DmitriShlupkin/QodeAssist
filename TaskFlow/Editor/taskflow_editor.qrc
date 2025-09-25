@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/qt/qml/TaskFlow/Editor">
+        <file>qml/FlowEditorView.qml</file>
+        <file>qml/Flow.qml</file>
+        <file>qml/Task.qml</file>
+        <file>qml/TaskPort.qml</file>
+        <file>qml/TaskParameter.qml</file>
+        <file>qml/TaskConnection.qml</file>
+    </qresource>
+</RCC>

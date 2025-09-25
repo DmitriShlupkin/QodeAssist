@@ -1,4 +1,4 @@
-qt_add_library(TaskFlowCore STATIC
+add_library(TaskFlowCore STATIC
     BaseTask.hpp BaseTask.cpp
     TaskConnection.hpp TaskConnection.cpp
     Flow.hpp Flow.cpp
