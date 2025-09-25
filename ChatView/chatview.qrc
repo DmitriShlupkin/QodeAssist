@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/qt/qml/ChatView">
+        <file>qml/RootItem.qml</file>
+        <file>qml/ChatItem.qml</file>
+        <file>qml/Badge.qml</file>
+        <file>qml/dialog/CodeBlock.qml</file>
+        <file>qml/dialog/TextBlock.qml</file>
+        <file>qml/controls/QoAButton.qml</file>
+        <file>qml/parts/TopBar.qml</file>
+        <file>qml/parts/BottomBar.qml</file>
+        <file>qml/parts/AttachedFilesPlace.qml</file>
+        <file>icons/attach-file-light.svg</file>
+        <file>icons/attach-file-dark.svg</file>
+        <file>icons/close-dark.svg</file>
+        <file>icons/close-light.svg</file>
+        <file>icons/link-file-light.svg</file>
+        <file>icons/link-file-dark.svg</file>
+        <file>icons/load-chat-dark.svg</file>
+        <file>icons/save-chat-dark.svg</file>
+        <file>icons/clean-icon-dark.svg</file>
+        <file>icons/file-in-system.svg</file>
+        <file>icons/window-lock.svg</file>
+        <file>icons/window-unlock.svg</file>
+        <file>icons/chat-icon.svg</file>
+        <file>icons/chat-pause-icon.svg</file>
+    </qresource>
+</RCC>

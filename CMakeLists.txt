@@ -5,16 +5,41 @@ project(QodeAssist)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_package(QtCreator REQUIRED COMPONENTS Core)
-find_package(Qt6 COMPONENTS Core Gui Quick Widgets Network Test LinguistTools REQUIRED)
+find_package(QtCreator REQUIRED COMPONENTS
+  Core
+  TextEditor
+  ProjectExplorer
+  LanguageClient
+)
+find_package(Qt5 COMPONENTS Core Gui Quick Widgets QuickWidgets Qml Concurrent Network Test LinguistTools REQUIRED)
 find_package(GTest)
 
-qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES en)
+
+set(_qt_components
+  Core
+  Gui
+  Quick
+  QuickWidgets
+  Widgets
+  Network
+  Concurrent
+  Qml
+  Test
+)
+
+foreach(component IN LISTS _qt_components)
+  if(TARGET Qt5::${component} AND NOT TARGET Qt::${component})
+    add_library(Qt::${component} INTERFACE IMPORTED)
+    set_property(TARGET Qt::${component} PROPERTY INTERFACE_LINK_LIBRARIES Qt5::${component})
+  endif()
+endforeach()
+
+unset(_qt_components)
 
 # IDE_VERSION is defined by QtCreator package
 string(REGEX MATCH "([0-9]+)\\.([0-9]+)\\.([0-9]+)" version_match ${IDE_VERSION})
@@ -43,6 +68,27 @@ if(GTest_FOUND)
   add_subdirectory(test)
 endif()
 
+set(QODEASSIST_TRANSLATIONS
+    ${CMAKE_CURRENT_SOURCE_DIR}/resources/translations/QodeAssist_en.ts
+)
+
+qt5_add_translation(QODEASSIST_QM_FILES ${QODEASSIST_TRANSLATIONS})
+
+set(QODEASSIST_TRANSLATION_QRC ${CMAKE_CURRENT_BINARY_DIR}/QodeAssistTranslations.qrc)
+set(_translation_entries "")
+foreach(qm ${QODEASSIST_QM_FILES})
+  get_filename_component(_qm_name ${qm} NAME)
+  string(APPEND _translation_entries "        <file alias=\"${_qm_name}\">${qm}</file>\n")
+endforeach()
+
+file(WRITE ${QODEASSIST_TRANSLATION_QRC}
+"<RCC>\n    <qresource prefix=\"/translations\">\n${_translation_entries}    </qresource>\n</RCC>\n")
+
+qt5_add_resources(QODEASSIST_TRANSLATION_RCC ${QODEASSIST_TRANSLATION_QRC})
+set_source_files_properties(${QODEASSIST_TRANSLATION_RCC} PROPERTIES OBJECT_DEPENDS "${QODEASSIST_QM_FILES}")
+add_custom_target(QodeAssistTranslations ALL DEPENDS ${QODEASSIST_QM_FILES})
+unset(_translation_entries)
+
 add_qtc_plugin(QodeAssist
   PLUGIN_DEPENDS
     QtCreator::Core
@@ -57,7 +103,7 @@ add_qtc_plugin(QodeAssist
     Qt::Network
     QtCreator::ExtensionSystem
     QtCreator::Utils
-    QodeAssistChatViewplugin
+    QodeAssistChatView
   SOURCES
     .github/workflows/build_cmake.yml
     .github/workflows/README.md
@@ -116,7 +162,10 @@ add_qtc_plugin(QodeAssist
     tools/ReadVisibleFilesTool.hpp tools/ReadVisibleFilesTool.cpp
     tools/ToolHandler.hpp tools/ToolHandler.cpp
     tools/ListProjectFilesTool.hpp tools/ListProjectFilesTool.cpp
+    ${QODEASSIST_TRANSLATION_RCC}
 )
+
+add_dependencies(QodeAssist QodeAssistTranslations)
 
 get_target_property(QtCreatorCorePath QtCreator::Core LOCATION)
 find_program(QtCreatorExecutable
@@ -134,10 +183,3 @@ if (QtCreatorExecutable)
   )
   set_target_properties(RunQtCreator PROPERTIES FOLDER "qtc_runnable")
 endif()
-
-#TODO change to TS_OUTPUT_DIRECTORY after removing Qt6.8
-qt_add_translations(TARGETS QodeAssist
-          TS_FILE_DIR ${CMAKE_CURRENT_LIST_DIR}/resources/translations
-          RESOURCE_PREFIX "/translations"
-          LUPDATE_OPTIONS -no-obsolete
-)
