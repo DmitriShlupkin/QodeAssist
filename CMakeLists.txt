@@ -103,7 +103,7 @@ add_qtc_plugin(QodeAssist
     Qt::Network
     QtCreator::ExtensionSystem
     QtCreator::Utils
-    QodeAssistChatView
+    QodeAssistChatViewplugin
   SOURCES
     .github/workflows/build_cmake.yml
     .github/workflows/README.md
